@@ -1,14 +1,24 @@
 import json
 import sys
+import os
 
 from PyQt5.QtWidgets import QApplication
 
 from gui.mainwindow import MainWindow
 
+INITIAL_CFG = 'config.ini'
+USER_CFG = 'config.json'
+
 
 def load_config():
-    with open('config.json') as fp:
+    config = INITIAL_CFG
+
+    if os.path.exists(USER_CFG):
+        config = USER_CFG
+
+    with open(config) as fp:
         config = json.load(fp)
+
     return config
 
 

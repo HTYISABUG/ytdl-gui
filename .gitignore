@@ -141,7 +141,10 @@ cython_debug/
 .vscode/
 Scripts/
 pyvenv.cfg
+config.json
 *.exe
 *.mp4
 *.mkv
 *.ui
+*.webm
+*.part
