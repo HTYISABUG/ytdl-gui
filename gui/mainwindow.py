@@ -67,12 +67,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         folder = self.save_to.text()
         file_temp = self.filename_template.text()
-
-        if file_temp == '':
-            file_temp = '%(title)s.%(id)s.%(ext)s'
-        else:
-            file_temp += '.%(ext)s'
-
+        file_temp = self.template_process(file_temp)
         file_path = os.path.join(folder, file_temp)
 
         if self.split.isChecked():
@@ -81,6 +76,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.ytdl_helper.audio_only()
 
         self.ytdl_helper.output(file_path).exec(url)
+
+    def template_process(self, template):
+        if template == '':
+            template = '%(title)s.%(id)s'
+
+        if self.split.isChecked() and '.%(format)s' not in template:
+            template += '.%(format)s'
+
+        template += '.%(ext)s'
+
+        return template
 
     def on_abort_released(self):
         self.process.kill()
