@@ -57,7 +57,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         url = self.url.text()
 
         folder = self.save_to.text()
-        file_temp = "%(title)s.%(id)s.%(ext)s"
+        file_temp = self.filename_template.text()
         file_path = os.path.join(folder, file_temp)
 
         self.ytdl_helper.output(file_path).exec(url)

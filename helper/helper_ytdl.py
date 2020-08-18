@@ -12,6 +12,9 @@ class YTDLHelper(object):
         self.process.start(self.ytdl_path, ['-U'])
 
     def output(self, template):
+        if template == '':
+            template = '%(title)s.%(id)s.%(ext)s'
+
         self.params += ['-o', template]
         return self
 
