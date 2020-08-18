@@ -59,6 +59,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         [btn.setEnabled(True) for btn in self.findChildren(QAbstractButton)]
         self.abort.setEnabled(False)
 
+        if exitStatus == 0:
+            self.log.appendPlainText('[info] Done.')
+
     def on_download_released(self):
         url = self.url.text()
 
@@ -67,6 +70,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         if file_temp == '':
             file_temp = '%(title)s.%(id)s.%(ext)s'
+        else:
+            file_temp += '.%(ext)s'
 
         file_path = os.path.join(folder, file_temp)
 
