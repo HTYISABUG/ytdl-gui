@@ -39,6 +39,7 @@ class Ui_MainWindow(object):
         self.download.setObjectName("download")
         self.horizontalLayout_2.addWidget(self.download)
         self.abort = QtWidgets.QPushButton(self.groupBox)
+        self.abort.setEnabled(False)
         self.abort.setObjectName("abort")
         self.horizontalLayout_2.addWidget(self.abort)
         self.verticalLayout.addLayout(self.horizontalLayout_2)
@@ -70,7 +71,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_2.addWidget(self.log)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 20))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 24))
         self.menubar.setObjectName("menubar")
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
@@ -82,7 +83,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "ytdl-gui"))
         self.groupBox.setTitle(_translate("MainWindow", "Downlaod Setting"))
         self.label.setText(_translate("MainWindow", "Url:"))
         self.url.setPlaceholderText(_translate("MainWindow", "https://www.youtube.com/watch?v="))
