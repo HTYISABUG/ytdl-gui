@@ -6,7 +6,7 @@ import json
 from zipfile import ZipFile
 
 from PyQt5 import uic
-from PyQt5.QtWidgets import QMainWindow, QFileDialog, QApplication, QAbstractButton
+from PyQt5.QtWidgets import QMainWindow, QFileDialog, QApplication, QAbstractButton, QButtonGroup
 from PyQt5.QtCore import QProcess
 
 from helper.helper_ytdl import YTDLHelper
@@ -26,6 +26,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # Setup UI
         self.setupUi(self)
         self.save_to.setText(self.config['download_path'])
+
+        checkbox_group = QButtonGroup(self)
+        checkbox_group.setExclusive(True)
+        checkbox_group.addButton(self.normal)
+        checkbox_group.addButton(self.split)
+        checkbox_group.addButton(self.audio_only)
 
         # Setup subprocess
         self.process = QProcess(self)
@@ -58,7 +64,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         folder = self.save_to.text()
         file_temp = self.filename_template.text()
+
+        if file_temp == '':
+            file_temp = '%(title)s.%(id)s.%(ext)s'
+
         file_path = os.path.join(folder, file_temp)
+
+        if self.split.isChecked():
+            self.ytdl_helper.split()
+        elif self.audio_only.isChecked():
+            self.ytdl_helper.audio_only()
 
         self.ytdl_helper.output(file_path).exec(url)
 

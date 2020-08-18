@@ -11,10 +11,15 @@ class YTDLHelper(object):
     def update(self):
         self.process.start(self.ytdl_path, ['-U'])
 
-    def output(self, template):
-        if template == '':
-            template = '%(title)s.%(id)s.%(ext)s'
+    def split(self):
+        self.params += ['-f', 'bestvideo,bestaudio']
+        return self
 
+    def audio_only(self):
+        self.params += ['-f', 'bestaudio']
+        return self
+
+    def output(self, template):
         self.params += ['-o', template]
         return self
 
