@@ -19,6 +19,14 @@ class YTDLHelper(object):
         self.params += ['-f', 'bestaudio']
         return self
 
+    def encoding(self, fmt):
+        self.params += ['--merge-output-format', fmt]
+        return self
+
+    def thumbnail(self):
+        self.params += ['--write-thumbnail']
+        return self
+
     def output(self, template):
         self.params += ['-o', template]
         return self

@@ -7,7 +7,7 @@ from zipfile import ZipFile
 
 from PyQt5 import uic
 from PyQt5.QtWidgets import QMainWindow, QFileDialog, QApplication, QAbstractButton, QButtonGroup
-from PyQt5.QtCore import QProcess
+from PyQt5.QtCore import QProcess, Qt
 
 from helper.helper_ytdl import YTDLHelper
 
@@ -49,6 +49,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def on_process_started(self):
         [btn.setEnabled(False) for btn in self.findChildren(QAbstractButton)]
         self.abort.setEnabled(True)
+        self.encoding.setEnabled(False)
 
     def on_process_readyReadStandardOutput(self):
         outputBytes = self.process.readAll().data()
@@ -58,6 +59,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def on_process_finished(self, exitCode, exitStatus):
         [btn.setEnabled(True) for btn in self.findChildren(QAbstractButton)]
         self.abort.setEnabled(False)
+        self.encoding.setEnabled(self.normal.isChecked())
 
         if exitStatus == 0:
             self.log.appendPlainText('[info] Done.')
@@ -70,10 +72,20 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         file_temp = self.template_process(file_temp)
         file_path = os.path.join(folder, file_temp)
 
+        # Check Video Seperation option
         if self.split.isChecked():
             self.ytdl_helper.split()
         elif self.audio_only.isChecked():
             self.ytdl_helper.audio_only()
+
+        # Check Video Encoding options
+        if self.encoding.isChecked():
+            fmt = self.encoding_format.currentText()
+            self.ytdl_helper.encoding(fmt)
+
+        # Check Thumbnail option
+        if self.thumbnail.isChecked():
+            self.ytdl_helper.thumbnail()
 
         self.ytdl_helper.output(file_path).exec(url)
 
@@ -97,6 +109,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self, 'Open Directory', self.config['download_path'],  QFileDialog.ShowDirsOnly)
 
         self.save_to.setText(self.config['download_path'])
+
+    def on_normal_stateChanged(self, state):
+        self.encoding.setEnabled(state == Qt.Checked)
 
     def showEvent(self, event):
         super().showEvent(event)

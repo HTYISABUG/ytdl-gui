@@ -139,6 +139,7 @@ cython_debug/
 
 # Custom
 .vscode/
+bin/
 Scripts/
 pyvenv.cfg
 config.json
