@@ -56,13 +56,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.ffmpeg_helper = FFMPEGHelper(
             self.config['ffmpeg_path'], self.process)
 
+        # Object status keeper
+        self.object_status = {}
+
     def on_process_started(self):
         [btn.setEnabled(False)
          for btn in self.groupBox.findChildren(QAbstractButton)]
         self.abort.setEnabled(True)
 
-        [btn.setEnabled(False)
-         for btn in self.groupBox_2.findChildren((QAbstractButton, QGroupBox)) if btn.isCheckable()]
+        for btn in self.groupBox_2.findChildren((QAbstractButton, QGroupBox)):
+            if btn.isCheckable():
+                self.object_status[btn] = btn.isEnabled()
+                btn.setEnabled(False)
 
     def on_process_readyReadStandardOutput(self):
         outputBytes = self.process.readAll().data()
@@ -74,9 +79,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
          for btn in self.groupBox.findChildren(QAbstractButton)]
         self.abort.setEnabled(False)
 
-        [btn.setEnabled(True)
-         for btn in self.groupBox_2.findChildren((QAbstractButton, QGroupBox)) if btn.isCheckable()]
-        self.encoding.setEnabled(self.normal.isChecked())
+        for btn in self.groupBox_2.findChildren((QAbstractButton, QGroupBox)):
+            if btn.isCheckable():
+                btn.setEnabled(self.object_status[btn])
+
+        self.object_status = {}
 
         if exitStatus == 0:
             self.log.appendPlainText('[info] Done.')
@@ -85,11 +92,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         url = self.url.text()
 
         folder = self.save_to.text()
-        file_temp = self.filename_template.text()
-        file_temp = self.template_process(file_temp)
-        file_path = os.path.join(folder, file_temp)
 
         if not self.clip.isChecked():
+            file_temp = self.filename_template.text()
+            file_temp = self.template_process(file_temp)
+            file_path = os.path.join(folder, file_temp)
+
             # Check Video Seperation option
             if self.split.isChecked():
                 self.ytdl_helper.split()
@@ -108,6 +116,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.ytdl_helper.output(file_path).exec(url)
         else:
             filename = self.ytdl_helper.get_filename(url)
+            file_path = os.path.join(folder, filename)
             url = self.ytdl_helper.get_real_url(url)
 
             start = self.clip_from.text()
@@ -122,7 +131,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 elif self.clip_end_options.currentIndex() == 1:
                     self.ffmpeg_helper.duration(end)
 
-            self.ffmpeg_helper.download(url, filename)
+            self.ffmpeg_helper.download(url, file_path)
 
     def template_process(self, template):
         if template == '':
@@ -149,6 +158,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.encoding.setEnabled(state == Qt.Checked)
 
     def on_analysis_released(self):
+        self.analysis.setText('Analysing...')
+        QApplication.processEvents()
+
         url = self.ytdl_helper.get_real_url(self.url.text())
         duration = self.ffprobe_helper.get_duration(url)
 
@@ -158,6 +170,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             duration = int(float(duration))
 
         self.video_length.setText(f'Total length: {duration}s')
+        self.analysis.setText('Analysis')
 
     def on_clip_toggled(self, on):
         if on:
