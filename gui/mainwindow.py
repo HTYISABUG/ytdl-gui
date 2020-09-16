@@ -151,8 +151,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.log.appendPlainText('[info]' 'The process has been aborted.')
 
     def on_browse_released(self):
-        self.config['download_path'] = QFileDialog.getExistingDirectory(
+        download_path = QFileDialog.getExistingDirectory(
             self, 'Open Directory', self.config['download_path'],  QFileDialog.ShowDirsOnly)
+
+        if download_path != '':
+            self.config['download_path'] = download_path
 
         self.save_to.setText(self.config['download_path'])
 
