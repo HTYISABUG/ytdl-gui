@@ -20,6 +20,8 @@ USER_CFG = 'config.json'
 
 class MainWindow(QMainWindow, Ui_MainWindow):
 
+    startup = False
+
     def __init__(self, config):
         self.config = config
 
@@ -188,12 +190,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def showEvent(self, event):
         super().showEvent(event)
 
-        self.log.appendPlainText(
-            '[info] Updating youtube-dl to latest version.')
-        self.ytdl_helper.update()
+        if not self.startup:
+            self.log.appendPlainText(
+                '[info] Updating youtube-dl to latest version.')
+            self.ytdl_helper.update()
+            self.startup = True
 
     def closeEvent(self, event):
-        super().closeEvent(event)
-
         with open(USER_CFG, 'w') as fp:
             json.dump(self.config, fp)
+
+        super().closeEvent(event)
